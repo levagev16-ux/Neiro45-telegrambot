@@ -1,6 +1,6 @@
+from flask import Flask, request
 import os
 import requests
-from flask import Flask, request
 
 app = Flask(__name__)
 
@@ -46,6 +46,7 @@ def ask_gemini(text):
     response.raise_for_status()
 
     data = response.json()
+
     return data["choices"][0]["message"]["content"]
 
 
@@ -67,11 +68,11 @@ def webhook():
     if not text:
         return "OK", 200
 
-    # ЛИЧНЫЙ ЧАТ
+    # Личная переписка
     if chat_type == "private":
         prompt = text
 
-    # ГРУППА / СУПЕРГРУППА
+    # Группа
     elif chat_type in ("group", "supergroup"):
 
         if not text.startswith("/ask"):
@@ -86,13 +87,11 @@ def webhook():
             )
             return "OK", 200
 
-    # Остальные типы чатов игнорируем
     else:
         return "OK", 200
 
     try:
         answer = ask_gemini(prompt)
-
         send_message(chat_id, answer)
 
     except Exception as e:
