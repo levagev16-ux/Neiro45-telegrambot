@@ -1,6 +1,6 @@
-from flask import Flask, request
 import os
 import requests
+from flask import Flask, request
 
 app = Flask(__name__)
 
@@ -50,7 +50,7 @@ def ask_gemini(text):
     return data["choices"][0]["message"]["content"]
 
 
-@app.route("/api/webhook", methods=["POST"])
+@app.route("/", methods=["POST"])
 def webhook():
     update = request.get_json(silent=True)
 
@@ -68,13 +68,14 @@ def webhook():
     if not text:
         return "OK", 200
 
-    # Личная переписка
+    # ЛИЧНЫЙ ЧАТ
     if chat_type == "private":
         prompt = text
 
-    # Группа
+    # ГРУППА
     elif chat_type in ("group", "supergroup"):
 
+        # В группе отвечаем только на /ask
         if not text.startswith("/ask"):
             return "OK", 200
 
